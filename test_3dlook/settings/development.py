@@ -47,6 +47,9 @@ INSTALLED_APPS = [
     'allauth.account',
     'rest_auth',
     'rest_auth.registration',
+
+    # Main apps
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -83,12 +86,24 @@ WSGI_APPLICATION = 'test_3dlook.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'test_3dlook',
+        'USER': 'test_3dlook',
+        'PASSWORD': 'YOUR_PASSWORD_FOR_test_3dlook',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'TEST': {
+            'NAME': 'test_3dlook_test'
+        }
     }
 }
+
+
+# Custom User model
+AUTH_USER_MODEL = 'users.User'
 
 
 # Password validation
@@ -130,10 +145,23 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+
 # Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
+}
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'users.serializers.UserDetailsSerializer'
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'users.serializers.UserRegisterSerializer'
 }
 
 SITE_ID = 1
@@ -146,3 +174,7 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 FROM_EMAIL_ADDRESS = EMAIL_HOST_USER
+
+
+# Project Admins
+ADMINS = []
