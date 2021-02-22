@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 SECRET_KEY = '6sa7*ib+p$ty48i^)#dg3j!0#l$*+tu4t-t#2ljv2(+uo5$e9y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -96,9 +96,6 @@ DATABASES = {
         'PASSWORD': 'YOUR_PASSWORD_FOR_test_3dlook',
         'HOST': 'localhost',
         'PORT': '5432',
-        'TEST': {
-            'NAME': 'test_3dlook_test'
-        }
     }
 }
 
@@ -121,7 +118,7 @@ LOGGING = {
             'formatter': 'console'
         },
         'file': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'formatter': 'file',
             'filename': '/tmp/debug.log'

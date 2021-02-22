@@ -9,6 +9,7 @@ class UserRegisterSerializer(RegisterSerializer):
     avatar = serializers.ImageField(required=False)
 
     def custom_signup(self, request, user):
+        """Save birthday and avatar when user register."""
         if birthday := request.data.get('birthday'):
             user.birthday = birthday
         if avatar := request.data.get('avatar'):

@@ -28,6 +28,7 @@ class User(AbstractUser):
         self.__original_avatar = self.avatar
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        """Override user's save method to check if avatar updated."""
         if self.avatar != self.__original_avatar:
             self.is_avatar_rotated = False
         super().save(force_insert, force_update,  *args, **kwargs)
