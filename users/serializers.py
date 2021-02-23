@@ -2,11 +2,15 @@ from rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 
 from users.models import User
+from users.validators import user_avatar_validator
 
 
 class UserRegisterSerializer(RegisterSerializer):
     birthday = serializers.DateField(required=False)
-    avatar = serializers.ImageField(required=False)
+    avatar = serializers.ImageField(
+        required=False,
+        validators=(user_avatar_validator,)
+    )
 
     def custom_signup(self, request, user):
         """Save birthday and avatar when user register."""

@@ -1,0 +1,158 @@
+[program:3dlook_gunicorn]
+
+# Directory where your site's project files are located
+directory=/var/www/3dlook/
+
+# Each process needs to have a separate socket file, so we use process_num
+command=/home/ubuntu/.local/share/virtualenvs/3dlook-wKzxXlml/bin/gunicorn test_3dlook.wsgi --name test_3dlook --workers 2 --bind=unix:/var/www/3dlook/gunicorn.sock --log-level=info
+
+# Number of processes to startup, roughly the number of CPUs you have
+numprocs=1
+
+# If supervisord is run as the root user, switch users to this UNIX user account
+# before doing any processing.
+user=ubuntu
+
+environment=DJANGO_SETTINGS_MODULE=test_3dlook.settings.production
+
+# Choose where you want your log to go
+stdout_logfile=/var/log/3dlook/gunicorn.log
+redirect_stderr=true
+
+# Automatically start and recover processes
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+
+
+
+[program:3dlook_celery_mail]
+
+# Set full path to celery program if using virtualenv
+command=/home/ubuntu/.local/share/virtualenvs/3dlook-wKzxXlml/bin/celery -A test_3dlook.celery_3dlook worker -E -l INFO -n worker.mail -Q mail
+
+# The directory to Django project
+directory=/var/www/3dlook/
+
+# Supervisor will start as many instances of this program as named by numprocs
+numprocs=1
+
+# If supervisord is run as the root user, switch users to this UNIX user account
+# before doing any processing.
+user=ubuntu
+
+# For Celery
+environment=C_FORCE_ROOT="true",DJANGO_SETTINGS_MODULE=test_3dlook.settings.production
+
+# Put process stdout output in this file
+stdout_logfile=/var/log/3dlook/celery_mail.log
+redirect_stderr=true
+
+# Automatically start and recover processes
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+
+startsecs=10
+stopwaitsecs=600
+
+
+
+[program:3dlook_celery_image_rotation]
+
+# Set full path to celery program if using virtualenv
+command=/home/ubuntu/.local/share/virtualenvs/3dlook-wKzxXlml/bin/celery -A test_3dlook.celery_3dlook worker -E -l INFO -n worker.image_rotation -Q image_rotation
+
+# The directory to Django project
+directory=/var/www/3dlook/
+
+# Supervisor will start as many instances of this program as named by numprocs
+numprocs=1
+
+# If supervisord is run as the root user, switch users to this UNIX user account
+# before doing any processing.
+user=ubuntu
+
+# For Celery
+environment=C_FORCE_ROOT="true",DJANGO_SETTINGS_MODULE=test_3dlook.settings.production
+
+# Put process stdout output in this file
+stdout_logfile=/var/log/3dlook/celery_image_rotation.log
+redirect_stderr=true
+
+# Automatically start and recover processes
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+
+startsecs=10
+stopwaitsecs=600
+
+
+
+[program:3dlook_celery_default]
+
+# Set full path to celery program if using virtualenv
+command=/home/ubuntu/.local/share/virtualenvs/3dlook-wKzxXlml/bin/celery -A test_3dlook.celery_3dlook worker -E -l INFO -n worker.default -Q default
+
+# The directory to Django project
+directory=/var/www/3dlook/
+
+# Supervisor will start as many instances of this program as named by numprocs
+numprocs=1
+
+# If supervisord is run as the root user, switch users to this UNIX user account
+# before doing any processing.
+user=ubuntu
+
+# For Celery
+environment=C_FORCE_ROOT="true",DJANGO_SETTINGS_MODULE=test_3dlook.settings.production
+
+# Put process stdout output in this file
+stdout_logfile=/var/log/3dlook/celery_default.log
+redirect_stderr=true
+
+# Automatically start and recover processes
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+
+startsecs=10
+stopwaitsecs=600
+
+
+
+[program:3dlook_celery_beat]
+
+# Set full path to celery program if using virtualenv
+command=/home/ubuntu/.local/share/virtualenvs/3dlook-wKzxXlml/bin/celery -A test_3dlook.celery_3dlook beat -l INFO --pidfile=  --schedule=/var/www/3dlook/celerybeat-schedule
+
+# The directory to Django project
+directory=/var/www/3dlook/
+
+# Supervisor will start as many instances of this program as named by numprocs
+numprocs=1
+
+# If supervisord is run as the root user, switch users to this UNIX user account
+# before doing any processing.
+user=ubuntu
+
+# For Celery
+environment=C_FORCE_ROOT="true",DJANGO_SETTINGS_MODULE=test_3dlook.settings.production
+
+# Put process stdout output in this file
+stdout_logfile=/var/log/3dlook/celery_beat.log
+redirect_stderr=true
+
+# Automatically start and recover processes
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+
+startsecs=10
+stopwaitsecs=600

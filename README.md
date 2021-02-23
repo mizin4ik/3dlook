@@ -3,13 +3,13 @@
 Test_3dlook extends the basic Django User model.
 The key features:
 - Available basic django-rest-auth endpoints:
-    - /rest-auth registration/ 
-    - /rest-auth/ user/
-    - /rest-auth/ login/
-    - /rest-auth/ logout/
-    - /rest-auth/ password/reset/
-    - /rest-auth/ password/reset/confirm /
-    - /rest-auth/ password/change /
+    - /rest-auth/registration/ 
+    - /rest-auth/user/
+    - /rest-auth/login/
+    - /rest-auth/logout/
+    - /rest-auth/password/reset/
+    - /rest-auth/password/reset/confirm/
+    - /rest-auth/password/change/
     - /rest-auth/registration/verify-email/
 - New fields:
     - avatar - image type (not more than 500kb file size);
@@ -84,7 +84,7 @@ sudo nano /etc/systemd/system/redis.service
 ```
 
 Paste the following code to the file
-```
+```editorconfig
 [Unit]
 Description=Redis In-Memory Data Store
 After=network.target
@@ -132,6 +132,17 @@ GRANT ALL PRIVILEGES ON DATABASE test_3dlook TO test_3dlook;
 ALTER USER test_3dlook CREATEDB;  # For tests database
 ```
 
+### NginX Installation (Production only)
+Install NginX
+```bash
+sudo apt install nginx
+```
+
+### Install certbot (Production only)
+```bash
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt install python-certbot-nginx
+```
 
 ------------------
 ## CONFIGURE PROJECT (FIRST TIME ONLY)
@@ -168,6 +179,63 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
+6. Configure Supervisor (Production only)
+- Copy supervisor.example to /etc/supervisor/conf.d/3dlook.conf
+```bash
+sudo cp supervisor.example /etc/supervisor/conf.d/3dlook.conf
+```
+- Restart supervisor
+```bash
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl restart all
+```
+
+7. Configure NginX (Production only)
+- Go to NginX config directory
+```bash
+cd /etc/nginx/sites-available/
+```
+
+- Create and open 3dlook.conf for editing
+```bash
+sudo nano 3dlook.conf
+```
+
+- Copy config bellow and paste it into 3dlook.conf
+```
+server {
+    listen 80;
+    server_name example.com;
+
+    location /static/ {
+        expires 1y;
+        access_log off;
+        add_header Cache-Control "public";
+        root /var/www/3dlook/;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/var/www/3dlook/gunicorn.sock;
+    }
+}
+```
+
+- Enable NginX Configuration
+```bash
+sudo ln -s /etc/nginx/sites-available/3dlook.conf /etc/nginx/sites-enabled/
+```
+
+- Restart NginX
+```bash
+sudo service nginx restart
+```
+
+- Generate temporary SSL certificate via certbot
+```bash
+sudo certbot --nginx -d example.com
+```
 
 ------------------
 ### RUN PROJECT
@@ -198,6 +266,12 @@ celery -A test_3dlook.celery_3dlook worker -E -l INFO -n test_3dlook.image_rotat
 ```bash
 export DJANGO_SETTINGS_MODULE=test_3dlook.settings.development  
 celery -A test_3dlook.celery_3dlook worker -E -l INFO -n test_3dlook.mail -Q mail  
+```
+
+5. Run Celery Beat (in new console tab)
+```bash
+export DJANGO_SETTINGS_MODULE=test_3dlook.settings.development  
+celery -A test_3dlook.celery_3dlook beat -l INFO --pidfile=  --schedule=celerybeat-schedule 
 ```
 
 ### Developers info
